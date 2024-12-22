@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản Lý Điểm Sinh Viên</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <style>
+      /* Chỉnh màu cho navbar */
+      .navbar {
+        background-color: #28a745 !important;
+      }
+      .navbar-brand,
+      .nav-link {
+        color: white !important;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: #d4f3d4 !important; /* Màu sáng khi hover */
+      }
+
+      /* Chỉnh màu các nút */
+      .btn-primary,
+      .btn-success,
+      .btn-info,
+      .btn-warning {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+      }
+      .btn-primary:hover,
+      .btn-success:hover,
+      .btn-info:hover,
+      .btn-warning:hover {
+        background-color: #218838 !important;
+        border-color: #218838 !important;
+      }
+      .btn-info,
+      .btn-warning {
+        color: white;
+      }
+
+      /* Màu nền cho header bảng */
+      .table-success {
+        background-color: #d4edda !important;
+      }
+
+      /* Màu cho thống kê biểu đồ */
+      .btn-group .btn-success {
+        background-color: #28a745 !important;
+        border-color: #28a745 !important;
+      }
+
+      /* Sử dụng màu xanh cho các text */
+
+      h5 {
+        color: #28a745 !important;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Quản lý điểm</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-5">
+            <li class="nav-item">
+              <a class="nav-link active" href="nhap-diem.html">Nhập điểm</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="diem-sv.html">Xem điểm </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="phuc-khao.html">Phúc khảo</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="hoi-dap-hoc-tap.html"
+                >Hỏi đáp học tập</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <div id="input-scores">
+        <h2 class="text-center">Nhập Điểm Sinh Viên</h2>
+        <!-- Menu Ngang -->
+        <div class="row mb-3">
+          <div class="col-md-2">
+            <label for="year" class="form-label">Chọn Năm Học:</label>
+            <select class="form-select" id="year">
+              <option selected>2024-2025</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="semester" class="form-label">Chọn Học Kì:</label>
+            <select class="form-select" id="semester">
+              <option selected>Học Kì 1</option>
+              <option>Học Kì 2</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="subject" class="form-label">Chọn Môn:</label>
+            <select class="form-select" id="subject">
+              <option selected>Giao Tiếp Người-Máy</option>
+              <option>Lập Trình Nâng Cao</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label for="class" class="form-label">Chọn Lớp:</label>
+            <select class="form-select" id="class">
+              <option selected>DH23DTA</option>
+              <option>DH23DTB</option>
+            </select>
+          </div>
+          <div class="col-md-4 text-end" style="margin-top: 32px">
+            <button class="btn btn-primary" id="save-btn">Lưu</button>
+            <button class="btn btn-warning" id="edit-btn">Sửa</button>
+            <div class="btn-group">
+              <button
+                class="btn btn-success dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                Xuất
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="#" id="export-pdf">Xuất PDF</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="#" id="export-excel"
+                    >Xuất Excel</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <button class="btn btn-info" id="print-btn">In</button>
+          </div>
+        </div>
+
+        <!-- Bảng Nhập Điểm -->
+        <table class="table table-bordered">
+          <thead class="table-success">
+            <tr>
+              <th>STT</th>
+              <th>Mã SV</th>
+              <th>Họ</th>
+              <th>Tên</th>
+              <th>Giữa Kì</th>
+              <th>Cuối Kì</th>
+            </tr>
+          </thead>
+          <tbody id="student-table">
+            <!-- Sinh viên mẫu -->
+            <tr>
+              <td>1</td>
+              <td>SV001</td>
+              <td>Nguyễn Văn</td>
+              <td>A</td>
+              <td>
+                <input
+                  type="number"
+                  class="midterm"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="final"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>SV002</td>
+              <td>Trần Thị</td>
+              <td>B</td>
+              <td>
+                <input
+                  type="number"
+                  class="midterm"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="final"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>SV003</td>
+              <td>Lê Văn</td>
+              <td>C</td>
+              <td>
+                <input
+                  type="number"
+                  class="midterm"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="final"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>SV004</td>
+              <td>Phạm Thị</td>
+              <td>D</td>
+              <td>
+                <input
+                  type="number"
+                  class="midterm"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="final"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>SV005</td>
+              <td>Võ Văn</td>
+              <td>E</td>
+              <td>
+                <input
+                  type="number"
+                  class="midterm"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+              <td>
+                <input
+                  type="number"
+                  class="final"
+                  value="0"
+                  min="0"
+                  max="10"
+                  step="0.1"
+                />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-end">
+          <button
+            class="btn btn-success"
+            id="show-stats"
+            style="padding-left: 12%; padding-right: 12%"
+          >
+            Xem Thống Kê Kết Quả Học Tập Cả Lớp
+          </button>
+          <a href="#input-scores" class="ms-3">
+            <button class="btn btn-primary" id="exportPDFThongke">⭡</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Thống Kê -->
+      <div id="stats" style="display: none">
+        <button class="btn btn-primary mb-3" id="back-btn">Quay Lại</button>
+        <h3 class="fw-bolder">Thống Kê Kết Quả Môn Giao Tiếp Người-Máy</h3>
+        <table class="table table-bordered">
+          <thead class="table-success">
+            <tr>
+              <th>STT</th>
+              <th>Mã SV</th>
+              <th>Họ</th>
+              <th>Tên</th>
+              <th>Điểm TB</th>
+              <th>Hoàn Thành</th>
+            </tr>
+          </thead>
+          <tbody id="stats-table"></tbody>
+        </table>
+        <div>
+          <h5>Tổng số sinh viên: <span id="totalStudents"></span></h5>
+          <h5>Số sinh viên đạt: <span id="passedStudents"></span></h5>
+          <h5 class="mb-4">
+            Số sinh viên rớt: <span id="failedStudents"></span>
+          </h5>
+        </div>
+        <h3 class="fw-bolder">Tỷ Lệ Hoàn Thành Môn Học</h3>
+        <canvas class="m-auto" id="chart" width="500" height="500"></canvas>
+        <br />
+        <div class="d-flex justify-content-end">
+          <div class="btn-group">
+            <button
+              class="btn btn-success dropdown-toggle"
+              data-bs-toggle="dropdown"
+            >
+              Xuất
+            </button>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#" id="export-pdf">Xuất PDF</a>
+              </li>
+              <li>
+                <a class="dropdown-item" href="#" id="export-excel"
+                  >Xuất Excel</a
+                >
+              </li>
+            </ul>
+          </div>
+          <button class="btn btn-info ms-3" id="print-btn2">In</button>
+          <button class="btn btn-primary ms-3" id="back-btn2">Quay Lại</button>
+          <a href="#stats" class="ms-3">
+            <button class="btn btn-primary" id="exportPDFThongke">⭡</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      //=========kiểm tra số điểm nhập vào========================================================
+      const inputs = document.querySelectorAll(".midterm, .final");
+
+      inputs.forEach((input) => {
+        let previousValue = input.value; // Lưu giá trị đầu tiên
+
+        // Khi focus vào ô input, lưu lại giá trị hiện tại
+        input.addEventListener("focus", function () {
+          previousValue = this.value;
+          this.select(); // Bôi đen toàn bộ nội dung khi focus
+        });
+
+        // Khi nhập liệu, kiểm tra giá trị
+        input.addEventListener("input", function () {
+          let value = this.value.trim(); // Loại bỏ khoảng trắng
+
+          // Cho phép giá trị rỗng tạm thời
+          if (value === "") {
+            previousValue = ""; // Cho phép xóa giá trị
+            return;
+          }
+
+          value = parseInt(value);
+          if (isNaN(value) || value < 0 || value > 10) {
+            this.value = previousValue; // Giữ nguyên giá trị trước đó nếu nhập sai
+          } else {
+            previousValue = this.value; // Cập nhật giá trị mới hợp lệ
+          }
+        });
+      });
+
+      //xem thống kê======================================================
+      // Placeholder for statistics and export functionalities
+      document.getElementById("show-stats").addEventListener("click", () => {
+        document.getElementById("input-scores").style.display = "none";
+        document.getElementById("stats").style.display = "block";
+      });
+      // Back button to return to input scores section
+      document.querySelectorAll("#back-btn, #back-btn2").forEach((button) => {
+        button.addEventListener("click", () => {
+          // Chuyển lại phần nhập điểm và ẩn phần thống kê
+          document.getElementById("stats").style.display = "none";
+          document.getElementById("input-scores").style.display = "block";
+        });
+      });
+
+      ////////////////buttons====================================
+      document.querySelectorAll("#print-btn, #print-btn2").forEach((button) => {
+        button.addEventListener("click", () => {
+          window.print();
+        });
+      });
+
+      const saveBtn = document.getElementById("save-btn");
+      const studentTable = document.getElementById("student-table");
+      let statsTable = document.getElementById("stats-table");
+
+      saveBtn.addEventListener("click", () => {
+        document
+          .querySelectorAll(".midterm, .final")
+          .forEach((input) => (input.disabled = true));
+        alert("Điểm đã lưu!");
+      });
+
+      document.getElementById("edit-btn").addEventListener("click", () => {
+        document
+          .querySelectorAll(".midterm, .final")
+          .forEach((input) => (input.disabled = false));
+      });
+
+      ////show-stats======================================================
+      let chartInstance; // Biến lưu trữ biểu đồ
+
+      document.getElementById("show-stats").addEventListener("click", () => {
+        statsTable.innerHTML = "";
+        let passed = 0,
+          failed = 0;
+        let totalStudents = studentTable.querySelectorAll("tr").length;
+
+        studentTable.querySelectorAll("tr").forEach((row, index) => {
+          const midterm = parseFloat(row.querySelector(".midterm").value) || 0;
+          const final = parseFloat(row.querySelector(".final").value) || 0;
+          const avg = (midterm * 0.3 + final * 0.7).toFixed(2);
+          const pass = avg >= 5 ? "✔" : "✘";
+
+          if (avg >= 5) passed++;
+          else failed++;
+
+          statsTable.innerHTML += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${row.cells[1].innerText}</td>
+                    <td>${row.cells[2].innerText}</td>
+                    <td>${row.cells[3].innerText}</td>
+                    <td>${avg}</td>
+                    <td>${pass}</td>
+                </tr>`;
+        });
+
+        // Thêm thống kê tổng số sinh viên
+        document.getElementById("totalStudents").textContent = totalStudents;
+        document.getElementById("passedStudents").textContent = passed;
+        document.getElementById("failedStudents").textContent = failed;
+
+        //biểu đồ tròn===================================================================
+
+        // Xóa biểu đồ cũ nếu có
+        if (chartInstance) {
+          chartInstance.destroy();
+        }
+
+        // Vẽ biểu đồ mới
+        const ctx = document.getElementById("chart").getContext("2d");
+        chartInstance = new Chart(ctx, {
+          // new Chart(document.getElementById("chart"), {
+          type: "pie",
+          data: {
+            labels: ["Đạt", "Rớt"],
+            datasets: [
+              {
+                data: [passed, failed],
+                backgroundColor: ["#28a745", "#dc3545"],
+              },
+            ],
+          },
+        });
+
+        document.getElementById("stats").style.display = "block";
+      });
+    </script>
+  </body>
+</html>

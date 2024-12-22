@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trang Phúc Khảo</title>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .navbar {
+        background-color: #28a745 !important;
+      }
+      .navbar-brand,
+      .nav-link {
+        color: white !important;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: #d4f3d4 !important; /* Màu sáng khi hover */
+      }
+
+      .table thead {
+        background-color: #a5d6a7;
+      }
+      .btn-primary {
+        background-color: #4caf50;
+        border-color: #4caf50;
+      }
+      .btn-primary:hover {
+        background-color: #388e3c;
+        border-color: #388e3c;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Quản lý điểm</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-5">
+            <li class="nav-item">
+              <a class="nav-link" href="nhap-diem.html">Nhập điểm</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="diem-sv.html">Xem điểm </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="phuc-khao.html">Phúc khảo</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="hoi-dap-hoc-tap.html"
+                >Hỏi đáp học tập</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+      <h2 class="text-center " id="tieu-de">Trang Phúc Khảo</h2>
+
+      <!-- Phần Gửi Yêu Cầu Phúc Khảo -->
+      <div class="card my-4">
+        <div class="card-body">
+          <h5 class="card-title">Gửi Yêu Cầu Phúc Khảo</h5>
+          <form id="review-form">
+            <div class="row">
+              <!-- Mã sinh viên -->
+              <div class="col-md-12 mb-3">
+                <label for="student-id" class="form-label">Mã Sinh Viên:</label>
+                <input
+                  type="text"
+                  id="student-id"
+                  class="form-control"
+                  placeholder="Nhập mã sinh viên"
+                  required
+                />
+              </div>
+              <!-- Tên sinh viên -->
+              <div class="col-md-12 mb-3">
+                <label for="student-name" class="form-label">Họ và Tên:</label>
+                <input
+                  type="text"
+                  id="student-name"
+                  class="form-control"
+                  placeholder="Nhập họ tên"
+                  required
+                />
+              </div>
+              <!-- Chọn môn học -->
+              <div class="col-md-12 mb-3">
+                <label for="subject-select" class="form-label">Môn Học:</label>
+                <select id="subject-select" class="form-select">
+                  <option value="Toán Cao Cấp">Toán Cao Cấp</option>
+                  <option value="Lập Trình Java">Lập Trình Java</option>
+                  <option value="Xác Suất Thống Kê">Xác Suất Thống Kê</option>
+                </select>
+              </div>
+              <!-- Lý do phúc khảo -->
+              <div class="col-md-12 mb-3">
+                <label for="reason" class="form-label">Lý Do Phúc Khảo:</label>
+                <textarea
+                  id="reason"
+                  class="form-control"
+                  rows="4"
+                  placeholder="Mô tả lý do phúc khảo"
+                  required
+                ></textarea>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">Gửi Yêu Cầu</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Danh Sách Yêu Cầu -->
+      <div class="card my-4">
+        <div class="card-body">
+          <h5 class="card-title">Danh Sách Yêu Cầu Đã Gửi</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>STT</th>
+                <th>Mã sinh viên</th>
+                <th>Họ và tên</th>
+                <th>Môn học</th>
+                <th>Lý do</th>
+                <th>Trạng thái</th>
+                <th>Phản hồi</th>
+              </tr>
+            </thead>
+            <tbody id="request-table">
+              <tr>
+                <td>1</td>
+                <td>0001</td>
+                <td>Nguyễn Văn A</td>
+                <td>Toán Cao Cấp</td>
+                <td>Điểm giữa kỳ chưa chính xác</td>
+                <td>Đang xử lý</td>
+                <td>Chưa có</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>0002</td>
+                <td>Trần Thị B</td>
+                <td>Lập Trình Java</td>
+                <td>Sai sót trong chấm điểm cuối kỳ</td>
+                <td>Đã hoàn thành</td>
+                <td>Chưa có</td>
+              </tr>
+              <!-- Các yêu cầu sẽ được thêm tự động ở đây -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <a href="#tieu-de" class="float-end mb-3">
+        <button class="btn btn-primary" id="">⭡</button>
+      </a>
+    </div>
+   
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Xử lý biểu mẫu phúc khảo
+      const reviewForm = document.getElementById("review-form");
+      const requestTable = document.getElementById("request-table");
+      let requestCount = 2;
+
+      reviewForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Lấy dữ liệu từ form
+        const studentId = document.getElementById("student-id").value;
+        const studentName = document.getElementById("student-name").value;
+        const subject = document.getElementById("subject-select").value;
+        const reason = document.getElementById("reason").value;
+
+        // Thêm dòng mới vào bảng
+        requestCount++;
+        const newRow = `
+        <tr>
+          <td>${requestCount}</td>
+          <td>${studentId}</td>
+          <td>${studentName}</td>
+          <td>${subject}</td>
+          <td>${reason}</td>
+          <td>Đang xử lý</td>
+        </tr>
+      `;
+        requestTable.innerHTML += newRow;
+
+        // Xóa dữ liệu trong form
+        reviewForm.reset();
+      });
+
+      const searchInput = document.getElementById("student-id");
+      // Đặt con trỏ vào ô tìm kiếm khi trang tải
+      searchInput.focus();
+
+      // Bôi đen nội dung khi người dùng bấm vào bất kỳ ô nhập liệu nào
+      document
+        .querySelectorAll("input, textarea")
+        .forEach(function (inputField) {
+          inputField.addEventListener("focus", function () {
+            this.select(); // Bôi đen toàn bộ nội dung trong ô nhập liệu
+          });
+        });
+    </script>
+  </body>
+</html>
